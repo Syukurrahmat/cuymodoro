@@ -1,89 +1,95 @@
-import { Box, Button, Container, List, ListItem, Stack, Text, ThemeIcon, Title } from '@mantine/core'; //prettier-ignore
-import { IconArrowNarrowRight, IconPlayerPlay } from '@tabler/icons-react'; //prettier-ignore
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'; //prettier-ignore
-import useSWR from 'swr';
-import useDB from '../lib/database/databaseContext';
+import { Box, Button, Container, List, ListItem, Stack, Text, Title } from '@mantine/core'; //prettier-ignore
+import { IconArrowLeft, IconArrowNarrowRight, IconPlayerPlay } from '@tabler/icons-react'; //prettier-ignore
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'; //prettier-ignore
+import { AppContext } from '../components/Layout/Layout';
+import useDB from '../database/databaseContext';
 
 export default function PreparePage() {
+	const db = useDB();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const db = useDB();
+	const { setData, taskList } = useOutletContext<AppContext>();
+	const { isContinuing } = location.state as LocationState || {}
 
-	const { name, id } = (location.state as Task | null) || {};
-	const validRequest = name && id;
+	const [task, ...nextTask] = taskList;
 
-	const { data } = useSWR<Task[]>(!!validRequest && 'tasklist');
-
-	if (!validRequest) return <Navigate to="/" />;
-
-	const nextTask = data?.filter((e) => e.id !== id);
-
-	const startFocus = async () => {
-		db.setTaskToFocus(+id!).then(() => {
-			navigate('/focus', { state: { name, id } });
+	const startFocus = () => {
+		db.setTaskToFocus(task.id!).then((task) => {
+			setData('activeTask', task);
+			setData('taskList', (e) => e.filter((f) => f.id !== task.id));
+			navigate('/focus');
 		});
 	};
 
-	if (!nextTask) return 'Loading';
-
 	return (
-		<Container size="xs" p="0">
-			<Stack align="stretch">
-				<Title ta="center" mt="md" py="lg">
-					{name}
+		<Container size="sm" component={Stack}>
+			<Stack gap="sm">
+				<Box>
+					<Title size="h2">
+						{!isContinuing ? 'Mulai Fokus' : 'Istirahat Selesai'}
+					</Title>
+					<Title size="h2" c="gray.5">
+						{!isContinuing
+							? 'dan mulai lebih produktif'
+							: 'Lanjut ke tugas kerikutnya'}
+					</Title>
+				</Box>
+				<Title size="h2" fw="600" my="xl" ta="center">
+					{task.name}
 				</Title>
+				<Container size="xs">
+					<Button
+						size="md"
+						fullWidth
+						variant="light"
+						leftSection={<IconPlayerPlay />}
+						onClick={() => startFocus()}
+					>
+						Fokus {!isContinuing ? 'Sekarang' : 'Lagi'}
+					</Button>
+				</Container>
+			</Stack>
 
-				<Button
-					size="md"
-					fullWidth
-					variant="light"
-					leftSection={<IconPlayerPlay />}
-					children="Fokus Sekarang"
-					onClick={() => startFocus()}
-				/>
+			{!!nextTask?.length && (
+				<Box w="100%">
+					<Text fw="600" mb="sm">
+						Tugas Selanjutnya
+					</Text>
+					<List
+						mt="xs"
+						spacing="md"
+						size="md"
+						center
+						icon={
+							<IconArrowNarrowRight
+								size="16"
+								color="var(--mantine-color-blue-5)"
+							/>
+						}
+					>
+						{nextTask.slice(0, 3).map((e) => (
+							<ListItem key={e.id}>{e.name}</ListItem>
+						))}
 
-				{!!nextTask.length && (
-					<Box w="100%">
-						<Text fw="600" mb="md">
-							Tugas Selanjutnya
-						</Text>
-						<List
-							mt="xs"
-							spacing="sm"
-							size="md"
-							center
-							icon={
-								<ThemeIcon
-									color="blue"
-									variant="light"
-									size={24}
-									radius="sm"
-								>
-									<IconArrowNarrowRight size="16" />
-								</ThemeIcon>
-							}
-						>
-							{nextTask.slice(0, 5).map((e) => (
-								<ListItem key={e.id}>{e.name}</ListItem>
-							))}
+						{nextTask.length > 3 && (
+							<ListItem c="dimmed">
+								dan {nextTask.length - 3} tugas lain
+							</ListItem>
+						)}
+					</List>
+				</Box>
+			)}
 
-							{nextTask.length > 5 && (
-								<ListItem fs="italic">
-									{nextTask.length - 5} Tugas lain
-								</ListItem>
-							)}
-						</List>
-					</Box>
-				)}
-
+			<Container size="xs">
 				<Button
 					fullWidth
 					variant="subtle"
 					color="orange"
 					children="Batal"
+					leftSection={<IconArrowLeft />}
 					onClick={() => navigate('/')}
 				/>
-			</Stack>
+			</Container>
 		</Container>
 	);
 }

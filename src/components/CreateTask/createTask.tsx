@@ -1,14 +1,12 @@
-import { Button, Group, Input, Paper, Stack, Text, Title } from '@mantine/core'; //prettier-ignore
-import { IconPlayerPlay } from '@tabler/icons-react';
+import { Input, Paper, Title } from '@mantine/core'; //prettier-ignore
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSWRConfig } from 'swr';
-import useDB from '../../lib/database/databaseContext';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import useDB from '../../database/databaseContext';
+import { AppContext } from '../Layout/Layout';
 
 export default function CreateTask() {
 	const db = useDB();
-	const { mutate } = useSWRConfig();
-
+	const { setData } = useOutletContext<AppContext>();
 	const navigate = useNavigate();
 	const [name, setName] = useState('');
 
@@ -17,8 +15,8 @@ export default function CreateTask() {
 		setName('');
 
 		db.addTask(name).then((task) => {
-			if (opt?.startNow) navigate(`/prepare`, { state: task });
-			mutate('tasklist');
+			if (opt?.startNow) navigate(`/prepare`, { state: { task } });
+			setData('taskList', (e) => [...e, task]);
 		});
 	};
 
@@ -29,35 +27,18 @@ export default function CreateTask() {
 				e.preventDefault();
 				submit();
 			}}
-			p="md"
-			withBorder
+			p={{ base: 'sm', sm: 'md' }}
+			shadow="xs"
 		>
-			<Title size="h2">Catat Tugas dan Mulai Fokus</Title>
-			<Stack mt="md">
-				<Input
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					size="md"
-					placeholder="Tulis apa yang mau kamu lakukan"
-				/>
-				<Group justify="space-between">
-					<Text fz="sm" c="dimmed">
-						Lorem ipsum, dolor sit elit. Repellat?
-					</Text>
-					<Group gap="sm">
-						<Button
-							variant="outline"
-							type="submit"
-							children="Tambah Tugas"
-						/>
-						<Button
-							leftSection={<IconPlayerPlay size="18" />}
-							children="Mulai"
-							onClick={() => submit({ startNow: true })}
-						/>
-					</Group>
-				</Group>
-			</Stack>
+			<Title size="h3">Catat Tugas dan Mulai Fokus</Title>
+			<Input
+				mt="sm"
+				flex="1"
+				value={name}
+				onChange={(e) => setName(e.target.value)}
+				size="md"
+				placeholder="Tulis apa yang mau kamu lakukan"
+			/>
 		</Paper>
 	);
 }

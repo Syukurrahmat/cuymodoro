@@ -1,4 +1,5 @@
 import { DBSchema, IDBPDatabase, openDB } from 'idb';
+import RestLevel from '../lib/restLevel';
 
 interface MyDBSchema extends DBSchema {
 	tasks: {
@@ -32,9 +33,6 @@ export default class Database {
 		return new Database(db);
 	}
 
-	get notStartedTask() {
-		return this.getOneTaskByStatus('notStarted')
-	}
 
 	async addTask(name: string) {
 		const data: Task = { name, status: 'notStarted', createdAt: new Date() };
@@ -42,14 +40,33 @@ export default class Database {
 		return { id, ...data };
 	}
 
+	async getActiveTask() {
+		return await Promise.all(['focus', 'rest'].map((e) => this.getOneTaskByStatus(e as TaskStatus))).then(
+			(e) => e.find((f) => f) || null
+		)
+	}
+
+	async getTaskByStatus<T extends TaskStatus>(status: T) {
+		return await this.db.getAllFromIndex('tasks', 'status', status) as TaskByStatus<T>[]
+	}
+
+	async getOneTaskByStatus<T extends TaskStatus>(status: T) {
+		return await this.db.getFromIndex('tasks', 'status', status) as TaskByStatus<T> || null
+	}
+
+
 	async setTaskToFocus(taskId: number) {
 		const tx = this.db.transaction('tasks', 'readwrite');
-		const { store } = tx;
+		const { store } = tx
 
 		const task = await store.get(taskId);
 		if (!task || task.status !== 'notStarted') throw new Error('error')
-		store.put({ ...task, status: 'focus', startAt: new Date() });
+
+		const data: Task = { ...task, status: 'focus', startAt: new Date() }
+		store.put(data);
+
 		await tx.done;
+		return data
 	}
 
 	async setTaskToRest(taskId: number) {
@@ -58,39 +75,46 @@ export default class Database {
 
 		const task = await store.get(taskId);
 		if (!task || task.status !== 'focus') throw new Error('error')
-		store.put({ ...task, status: 'rest', restAt: new Date() });
 
+		const currentTime = new Date()
+
+		const data: Task = {
+			...task,
+			status: 'rest',
+			restAt: currentTime,
+			maxRestDuration: RestLevel.getRestTime(task.startAt!, currentTime)
+		}
+
+		store.put(data);
 		await tx.done;
+		return data
 	}
 
 	async setTaskRestToComplete(taskId: number) {
 		const tx = this.db.transaction('tasks', 'readwrite');
 		const { store } = tx;
+
 		const task = await store.get(taskId);
+		if (!task || task.status === 'notStarted' || task.status == 'complete') throw new Error('error')
 
-		if (!task || task.status === 'notStarted') throw new Error('error')
+		const currentTime = new Date()
 
-		if (task.status == 'focus') {
-			store.put({ ...task, status: 'complete', restAt: new Date(), endAt: new Date() })
+		const data: Task = {
+			...task,
+			status: 'complete',
+			restAt: task.status == 'focus' ? currentTime : task.restAt,
+			endAt: currentTime
 		}
-		else {
-			store.put({ ...task, status: 'complete', endAt: new Date() })
-		};
 
+		store.put(data)
 		await tx.done;
+		return data
 	}
 
 	async removeTask(taskId: number) {
 		await this.db.delete('tasks', taskId);
 	}
 
-	async getAllTaskByStatus(status: TaskStatus) {
-		return await this.db.getAllFromIndex('tasks', 'status', status)
-	}
-
-	async getOneTaskByStatus<T extends TaskStatus>(status: T) {
-		return await this.db.getFromIndex('tasks', 'status', status) as TaskByStatus<T> || null
-	}
 
 	close() {
 		this.db.close();
