@@ -21,7 +21,7 @@ export default function Header({ colorTheme }: { colorTheme: string }) {
 					<IconHourglassHigh size="28" />
 				</ThemeIcon>
 				<Title size="h3" c={colorTheme}>
-					Domoro
+					Cuyomoro
 				</Title>
 			</Group>
 			<Select

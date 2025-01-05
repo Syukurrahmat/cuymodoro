@@ -1,27 +1,11 @@
-import {
-	ActionIcon,
-	Box,
-	Button,
-	Container,
-	Group,
-	Progress,
-	rem,
-	Stack,
-	Text,
-	ThemeIcon,
-	Title,
-} from '@mantine/core';
-import {
-	IconFocusCentered,
-	IconPictureInPicture,
-	IconRocket,
-	IconZzz,
-} from '@tabler/icons-react';
+import { ActionIcon, Box, Button, Container, Group, Progress, rem, Stack, Text, ThemeIcon, Title } from '@mantine/core'; //prettier-ignore
+import { IconFocusCentered, IconMaximize, IconMinimize, IconPictureInPicture, IconRocket, IconZzz } from '@tabler/icons-react'; //prettier-ignore
 import { useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { AppContext } from '../Layout/Layout';
+import styles from './CuymodoroScreen.module.css';
 
-const DomoroSessionData = {
+const CuymodoroSessionData = {
 	focus: {
 		icon: IconFocusCentered,
 		name: 'Fokus',
@@ -36,7 +20,7 @@ const DomoroSessionData = {
 	},
 };
 
-interface DomoroSession {
+interface CuymodoroScreen {
 	taskName: string;
 	timeInfo: string;
 	timeCount: string;
@@ -47,7 +31,7 @@ interface DomoroSession {
 	progress?: number;
 }
 
-export default function DomoroLayout({
+export default function CuymodoroScreen({
 	type,
 	progress,
 	timeCount,
@@ -56,43 +40,27 @@ export default function DomoroLayout({
 	timeInfo,
 	nextTaskName,
 	taskName,
-}: DomoroSession) {
-	const sessionData = DomoroSessionData[type];
+}: CuymodoroScreen) {
 	const ref = useRef<HTMLDivElement>(null);
 	const { isSupportPIP, colorTheme } = useOutletContext<AppContext>();
 
-	const dddd = () => {
-		(window as any).documentPictureInPicture
-			.requestWindow()
-			.then((pipWindow: any) => {
-				// Copy style sheets over from the initial document
-				// so that the player looks the same.
-				[...document.styleSheets].forEach((styleSheet) => {
-					try {
-						const cssRules = [...styleSheet.cssRules]
-							.map((rule) => rule.cssText)
-							.join('');
-						const style = document.createElement('style');
-
-						style.textContent = cssRules;
-						pipWindow.document.head.appendChild(style);
-					} catch (e) {
-						const link = document.createElement('link');
-
-						link.rel = 'stylesheet';
-						link.type = styleSheet.type;
-						link.media = styleSheet.media;
-						link.href = styleSheet.href;
-						pipWindow.document.head.appendChild(link);
-					}
-				});
-
-				pipWindow.document.body.append(ref.current);
-			});
+	const requestPiP = async () => {
+		alert('Dalam Proses Pengembangan ');
 	};
 
+	const fullScreenToggle = () => {
+		if (document.fullscreenElement) document.exitFullscreen();
+		else ref.current?.requestFullscreen();
+	};
+
+	const sessionData = CuymodoroSessionData[type];
+
 	return (
-		<Stack className="fullHeightContainer" ref={ref}>
+		<Stack
+			className={styles.root}
+			ref={ref}
+			style={{ '--bg': `var(--mantine-color-${colorTheme}-0)` }}
+		>
 			<Container px="0" size="sm" w="100%">
 				<Group justify="space-between">
 					<Group gap="sm" wrap="nowrap">
@@ -121,7 +89,7 @@ export default function DomoroLayout({
 					component="p"
 					c="gray.9"
 					py="sm"
-					className="font-mono"
+					className={styles.counter}
 					children={timeCount}
 				/>
 				<Container
@@ -153,17 +121,30 @@ export default function DomoroLayout({
 						)}
 					</Box>
 					<Group justify="space-between">
-						{isSupportPIP ? (
+						<Group gap="sm">
 							<ActionIcon
-								onClick={dddd}
+								onClick={fullScreenToggle}
 								size={rem(36)}
 								color={colorTheme}
 								variant="light"
-								children={<IconPictureInPicture size="20" />}
+								children={
+									document.fullscreenElement ? (
+										<IconMinimize size="20" />
+									) : (
+										<IconMaximize size="20" />
+									)
+								}
 							/>
-						) : (
-							<div />
-						)}
+							{isSupportPIP && (
+								<ActionIcon
+									onClick={requestPiP}
+									size={rem(36)}
+									color={colorTheme}
+									variant="light"
+									children={<IconPictureInPicture size="20" />}
+								/>
+							)}
+						</Group>
 
 						<Group gap="sm">
 							<Button

@@ -12,7 +12,7 @@ type ContextDataProps = 'activeTask' | 'taskList';
 export type AppContext<S extends TaskStatus = any> = {
 	activeTask: S extends TaskStatus ? TaskByStatus<S> : Task | null;
 	taskList: Task[];
-	colorTheme: 'blue' | 'teal' | 'violet';
+	colorTheme: 'blue' | 'teal' | 'cyan';
 	isSupportPIP: boolean;
 	setData: <T extends ContextDataProps>(
 		key: T,
@@ -21,7 +21,7 @@ export type AppContext<S extends TaskStatus = any> = {
 			: React.SetStateAction<Task[]>
 	) => void;
 	setColorTheme: React.Dispatch<
-		React.SetStateAction<'blue' | 'teal' | 'violet'>
+		React.SetStateAction<'blue' | 'teal' | 'cyan'>
 	>;
 };
 
@@ -64,11 +64,16 @@ export default function Layout() {
 	};
 
 	return (
-		<AppShell header={{ height: 58 }} transitionDuration={500} padding="sm" bg={colorTheme + '.0'}>
+		<AppShell
+			header={{ height: 58 }}
+			transitionDuration={500}
+			padding="sm"
+			bg={colorTheme == 'blue' ? '#f6f8fa' : colorTheme + '.0'}
+		>
 			<AppShell.Header
 				bg={colorTheme + '.1'}
 				px="sm"
-				bd='none'
+				bd="none"
 				children={<Header colorTheme={colorTheme} />}
 			/>
 			<AppShell.Main className="appShellMain">

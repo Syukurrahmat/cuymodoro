@@ -2,7 +2,7 @@ import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import moment from 'moment';
 import RestLevel from '../lib/restLevel';
 
-const DB_NAME = 'cuymodoro-db-s';
+const DB_NAME = 'cuymodoro-db';
 const DB_VERSION = 1;
 
 interface MyDBSchema extends DBSchema {

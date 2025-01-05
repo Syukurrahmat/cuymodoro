@@ -9,7 +9,15 @@ export function useStopwatch(startTime: Date) {
 
 	useEffect(() => {
 		const interval = setInterval(() => setDuration(getDuration()), 1000);
-		return () => clearInterval(interval);
+		const intervalNotif = setInterval(() => {
+			// const text = `HEY! Your task "${'ssssisj'}" is now overdue.`;
+			// const notification = new Notification("To do list", { body: text})
+			// alert('ejeje')
+		}, 10000);
+		return () => {
+			clearInterval(interval)
+			clearInterval(intervalNotif)
+		}
 	}, []);
 
 	return {

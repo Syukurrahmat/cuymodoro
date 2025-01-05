@@ -1,20 +1,11 @@
 import { Box, Button, Center, Container, Group, Stack, Title } from '@mantine/core'; //prettier-ignore
 import moment from 'moment';
-import {
-	Navigate,
-	useLocation,
-	useNavigate,
-	useOutletContext,
-} from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import CheckMark from '../components/CheckMark/CheckMark';
-import { AppContext } from '../components/Layout/Layout';
 
 export default function Complete() {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { setColorTheme } = useOutletContext<AppContext>();
-
-	setColorTheme('blue');
 
 	const { task } = (location.state as LocationState) || {};
 

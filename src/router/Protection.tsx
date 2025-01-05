@@ -1,9 +1,20 @@
 import { Navigate, Outlet, useOutletContext } from 'react-router-dom';
 import { AppContext } from '../components/Layout/Layout';
+import { useEffect } from 'react';
 
 export const Protection = ({ onActiveOnly }: { onActiveOnly?: boolean }) => {
-	const { activeTask, ...r } = useOutletContext<AppContext>();
+	const { activeTask, setColorTheme, ...r } = useOutletContext<AppContext>();
+
+	useEffect(() => {
+		if (!onActiveOnly) setColorTheme('blue');
+		if (onActiveOnly && activeTask?.status == 'focus') setColorTheme('cyan');
+		if (onActiveOnly && activeTask?.status == 'rest') setColorTheme('teal');
+	}, [activeTask?.status, onActiveOnly, setColorTheme]);
 	
+	useEffect(() => {
+		if (!onActiveOnly) document.title = 'Cuymodoro';
+	}, [onActiveOnly]);
+
 	if (onActiveOnly && !activeTask) return <Navigate to="/" />;
 
 	if (!onActiveOnly && activeTask) {
@@ -14,5 +25,5 @@ export const Protection = ({ onActiveOnly }: { onActiveOnly?: boolean }) => {
 		);
 	}
 
-	return <Outlet context={{ activeTask,  ...r }} />;
+	return <Outlet context={{ activeTask, setColorTheme, ...r }} />;
 };

@@ -1,18 +1,17 @@
 import moment from 'moment';
+import { useEffect } from 'react';
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
+import CuymodoroLayout from '../components/CuymodoroScreen/CuymodoroScreen';
 import { AppContext } from '../components/Layout/Layout';
-import DomoroLayout from '../components/DomoroLayout/DomoroLayout';
-import { useTimer } from '../hooks/useTimer';
 import useDB from '../database/databaseContext';
+import { useTimer } from '../hooks/useTimer';
 import { durationToHHMMSS } from '../lib/utils';
 
 export default function RestPage() {
 	const db = useDB();
 	const navigate = useNavigate();
-	const { activeTask, setColorTheme, taskList,  setData} = useOutletContext<AppContext<'rest'>>(); //prettier-ignore
+	const { activeTask, taskList,  setData} = useOutletContext<AppContext<'rest'>>(); //prettier-ignore
 
-	setColorTheme('teal');
-	
 	const onComplete = () => {
 		db.setTaskRestToComplete(activeTask.id!).then((e) => {
 			setData('activeTask', null);
@@ -29,13 +28,19 @@ export default function RestPage() {
 		onComplete
 	);
 
+	const counter = timer.remainingStr;
+
+	useEffect(() => {
+		document.title = `Istirahat: ${counter}`;
+	}, [counter]);
+
 	if (activeTask.status !== 'rest') return <Navigate to="/focus" />;
 
 	const nextTast =
 		taskList && taskList.filter((e) => e.id !== activeTask.id)[0];
 
 	return (
-		<DomoroLayout
+		<CuymodoroLayout
 			taskName={activeTask.name}
 			timeInfo={`Istirahat selama ${durationToHHMMSS(moment.duration(activeTask.maxRestDuration, 's'), true)}`} //prettier-ignore
 			timeCount={timer.remainingStr!}

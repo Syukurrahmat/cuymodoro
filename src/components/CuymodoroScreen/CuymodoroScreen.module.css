@@ -1,0 +1,25 @@
+.root {
+    flex: 1;
+    justify-content: space-between;
+
+    @media (min-width: 48em) {
+        padding-bottom: var(--app-shell-header-height);
+        justify-content: center;
+    }
+}
+
+.root:fullscreen {
+    background: var(--bg);
+    padding-block: var(--app-shell-header-height);
+    justify-content: space-between;
+
+    & :global(.mantine-Container-root) {
+        max-width: 75em;
+        padding-inline: var(--mantine-spacing-md) !important;
+    }
+}
+
+
+.counter {
+    font-family: "Azeret Mono", serif;
+}
