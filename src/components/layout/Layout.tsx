@@ -4,14 +4,15 @@ import { AppShell } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import useDB from '../../database/databaseContext';
+import ScreenLoader from '../ScreenLoader';
 import Header from './Header';
-
 
 type ContextDataProps = 'activeTask' | 'taskList';
 
 export type AppContext<S extends TaskStatus = any> = {
 	activeTask: S extends TaskStatus ? TaskByStatus<S> : Task | null;
 	taskList: Task[];
+	colorTheme: 'blue' | 'teal' | 'violet';
 	isSupportPIP: boolean;
 	setData: <T extends ContextDataProps>(
 		key: T,
@@ -19,6 +20,9 @@ export type AppContext<S extends TaskStatus = any> = {
 			? React.SetStateAction<Task | null>
 			: React.SetStateAction<Task[]>
 	) => void;
+	setColorTheme: React.Dispatch<
+		React.SetStateAction<'blue' | 'teal' | 'violet'>
+	>;
 };
 
 export default function Layout() {
@@ -27,6 +31,9 @@ export default function Layout() {
 	const [activeTask, setActiveTask] = useState<Task | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [taskList, setTaskList] = useState<Task[]>([]);
+	const [colorTheme, setColorTheme] =
+		useState<AppContext['colorTheme']>('blue');
+	const [fontsLoaded, setFontsLoaded] = useState(false);
 
 	useEffect(() => {
 		Promise.all([db.getActiveTask(), db.getTaskByStatus('notStarted')]).then(
@@ -36,13 +43,16 @@ export default function Layout() {
 				setLoading(false);
 			}
 		);
+		document.fonts.ready.then(() => setFontsLoaded(true));
 	}, []);
 
-	if (loading) return 'loading';
+	if (loading || !fontsLoaded) return <ScreenLoader />;
 
 	const contextValue: AppContext = {
 		activeTask,
 		taskList,
+		colorTheme,
+		setColorTheme,
 		isSupportPIP: 'documentPictureInPicture' in window,
 		setData: (key, data) => {
 			if (key == 'activeTask') {
@@ -54,12 +64,12 @@ export default function Layout() {
 	};
 
 	return (
-		<AppShell header={{ height: 58 }} padding="sm" bg="#f6f8fa">
+		<AppShell header={{ height: 58 }} transitionDuration={500} padding="sm" bg={colorTheme + '.0'}>
 			<AppShell.Header
-				bg="blue.0"
+				bg={colorTheme + '.1'}
 				px="sm"
-				style={{ borderColor: 'var(--mantine-color-blue-1)' }}
-				children={<Header />}
+				bd='none'
+				children={<Header colorTheme={colorTheme} />}
 			/>
 			<AppShell.Main className="appShellMain">
 				<Outlet context={contextValue satisfies AppContext} />

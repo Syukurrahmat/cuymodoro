@@ -3,14 +3,16 @@ import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
 import { AppContext } from '../components/Layout/Layout';
 
 import DomoroLayout from '../components/DomoroLayout/DomoroLayout';
-import { useStopwatch } from '../hooks/useTimer';
 import useDB from '../database/databaseContext';
+import { useStopwatch } from '../hooks/useTimer';
 
 export default function FocusPage() {
 	const db = useDB();
-	const {activeTask, setData} = useOutletContext<AppContext<'focus'>>(); //prettier-ignore
+	const {activeTask, setData, setColorTheme} = useOutletContext<AppContext<'focus'>>(); //prettier-ignore
 	const navigate = useNavigate();
 	const stopwatch = useStopwatch(activeTask.startAt || new Date());
+
+	setColorTheme('violet');
 
 	if (activeTask.status !== 'focus') return <Navigate to="/rest" />;
 

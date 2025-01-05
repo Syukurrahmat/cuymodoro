@@ -5,8 +5,9 @@ import { useState } from 'react';
 import { useMatch } from 'react-router-dom';
 import RestLevel, { LOCALSTORAGE_RESTLEVEL_KEY } from '../../lib/restLevel';
 
-export default function Header() {
+export default function Header({ colorTheme }: { colorTheme: string }) {
 	const isHome = Boolean(useMatch('/'));
+
 	const [selectIsOpen, setSelectIsOpen] = useState(false);
 	const [level, setLevel] = useLocalStorage<TaskLevel>({
 		key: LOCALSTORAGE_RESTLEVEL_KEY,
@@ -16,10 +17,10 @@ export default function Header() {
 	return (
 		<Container component={Group} size="sm" h="100%" px="0">
 			<Group gap="6" flex="1">
-				<ThemeIcon variant="transparent" size="lg">
+				<ThemeIcon color={colorTheme} variant="transparent" size="lg">
 					<IconHourglassHigh size="28" />
 				</ThemeIcon>
-				<Title size="h3" c="blue">
+				<Title size="h3" c={colorTheme}>
 					Domoro
 				</Title>
 			</Group>
@@ -28,6 +29,7 @@ export default function Header() {
 				bg="transparent"
 				radius="md"
 				disabled={!isHome}
+				color={colorTheme}
 				onBlur={() => setSelectIsOpen(false)}
 				onClick={() => setSelectIsOpen(true)}
 				dropdownOpened={selectIsOpen}

@@ -9,8 +9,10 @@ import { durationToHHMMSS } from '../lib/utils';
 export default function RestPage() {
 	const db = useDB();
 	const navigate = useNavigate();
-	const { activeTask, taskList,  setData} = useOutletContext<AppContext<'rest'>>(); //prettier-ignore
+	const { activeTask, setColorTheme, taskList,  setData} = useOutletContext<AppContext<'rest'>>(); //prettier-ignore
 
+	setColorTheme('teal');
+	
 	const onComplete = () => {
 		db.setTaskRestToComplete(activeTask.id!).then((e) => {
 			setData('activeTask', null);

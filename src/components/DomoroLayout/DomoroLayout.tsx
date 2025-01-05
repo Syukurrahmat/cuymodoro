@@ -59,7 +59,7 @@ export default function DomoroLayout({
 }: DomoroSession) {
 	const sessionData = DomoroSessionData[type];
 	const ref = useRef<HTMLDivElement>(null);
-	const { isSupportPIP } = useOutletContext<AppContext>();
+	const { isSupportPIP, colorTheme } = useOutletContext<AppContext>();
 
 	const dddd = () => {
 		(window as any).documentPictureInPicture
@@ -97,6 +97,7 @@ export default function DomoroLayout({
 				<Group justify="space-between">
 					<Group gap="sm" wrap="nowrap">
 						<ThemeIcon
+							color={colorTheme}
 							variant="light"
 							children={<sessionData.icon size="20" />}
 						/>
@@ -136,6 +137,7 @@ export default function DomoroLayout({
 						<Progress
 							radius="md"
 							size="md"
+							color={colorTheme}
 							transitionDuration={500}
 							value={progress}
 							striped={false}
@@ -155,6 +157,7 @@ export default function DomoroLayout({
 							<ActionIcon
 								onClick={dddd}
 								size={rem(36)}
+								color={colorTheme}
 								variant="light"
 								children={<IconPictureInPicture size="20" />}
 							/>
@@ -163,10 +166,15 @@ export default function DomoroLayout({
 						)}
 
 						<Group gap="sm">
-							<Button variant="light" onClick={onStop}>
+							<Button
+								color={colorTheme}
+								variant="light"
+								onClick={onStop}
+							>
 								Berhenti
 							</Button>
 							<Button
+								color={colorTheme}
 								leftSection={<sessionData.nextIcon size="20" />}
 								onClick={onNext}
 								children={sessionData.nextLabel}

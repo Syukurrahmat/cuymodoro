@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { DBContext } from './databaseContext';
 import Database from './database';
+import ScreenLoader from '../components/ScreenLoader';
 
 
 
@@ -14,7 +15,7 @@ export function DBProvider({ children }: any) {
 		return () => DB?.close();
 	}, []);
 
-	if (!DB) return 'loading .... ';
+	if (!DB) return <ScreenLoader />;
 
 	return <DBContext.Provider value={DB} children={children} />;
 }

@@ -8,8 +8,10 @@ export default function PreparePage() {
 	const db = useDB();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { setData, taskList } = useOutletContext<AppContext>();
+	const { setData, taskList, setColorTheme } = useOutletContext<AppContext>();
 	const { isContinuing } = location.state as LocationState || {}
+
+	setColorTheme('blue');
 
 	const [task, ...nextTask] = taskList;
 

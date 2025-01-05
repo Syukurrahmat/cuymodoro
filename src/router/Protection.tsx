@@ -3,7 +3,7 @@ import { AppContext } from '../components/Layout/Layout';
 
 export const Protection = ({ onActiveOnly }: { onActiveOnly?: boolean }) => {
 	const { activeTask, ...r } = useOutletContext<AppContext>();
-
+	
 	if (onActiveOnly && !activeTask) return <Navigate to="/" />;
 
 	if (!onActiveOnly && activeTask) {
@@ -14,5 +14,5 @@ export const Protection = ({ onActiveOnly }: { onActiveOnly?: boolean }) => {
 		);
 	}
 
-	return <Outlet context={{ activeTask, ...r }} />;
+	return <Outlet context={{ activeTask,  ...r }} />;
 };

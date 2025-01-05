@@ -1,12 +1,20 @@
 import { Box, Button, Center, Container, Group, Stack, Title } from '@mantine/core'; //prettier-ignore
-import CheckMark from '../components/CheckMark/CheckMark';
-import { IconChartBar } from '@tabler/icons-react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import moment from 'moment';
+import {
+	Navigate,
+	useLocation,
+	useNavigate,
+	useOutletContext,
+} from 'react-router-dom';
+import CheckMark from '../components/CheckMark/CheckMark';
+import { AppContext } from '../components/Layout/Layout';
 
 export default function Complete() {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { setColorTheme } = useOutletContext<AppContext>();
+
+	setColorTheme('blue');
 
 	const { task } = (location.state as LocationState) || {};
 
@@ -35,11 +43,8 @@ export default function Complete() {
 				</Box>
 
 				<Group justify="center">
-					<Button variant="light" leftSection={<IconChartBar size="18" />}>
-						Lihat Analitik
-					</Button>
 					<Button variant="light" onClick={() => navigate('/')}>
-						Beranda
+						Kembali ke Beranda
 					</Button>
 				</Group>
 			</Stack>
