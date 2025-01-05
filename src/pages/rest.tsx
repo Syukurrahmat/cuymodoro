@@ -35,7 +35,7 @@ export default function RestPage() {
 	return (
 		<DomoroLayout
 			taskName={activeTask.name}
-			timeInfo={`Istirahat selama ${durationToHHMMSS( moment.duration(activeTask.maxRestDuration, 's'), true)}`} //prettier-ignore
+			timeInfo={`Istirahat selama ${durationToHHMMSS(moment.duration(activeTask.maxRestDuration, 's'), true)}`} //prettier-ignore
 			timeCount={timer.remainingStr!}
 			onNext={onComplete}
 			progress={

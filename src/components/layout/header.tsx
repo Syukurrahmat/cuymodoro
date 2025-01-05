@@ -24,7 +24,7 @@ export default function Header() {
 				</Title>
 			</Group>
 			<Select
-				w="150px"
+				w="120px"
 				bg="transparent"
 				radius="md"
 				disabled={!isHome}

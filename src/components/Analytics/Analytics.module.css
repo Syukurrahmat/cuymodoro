@@ -1,0 +1,11 @@
+.root {
+    user-select: none;
+
+    @mixin hover {
+        background-color: var(--mantine-color-gray-1);
+    }
+}
+
+.sortableKnob {
+    cursor: grab;
+}

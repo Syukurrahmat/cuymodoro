@@ -1,0 +1,38 @@
+.line {
+    background-color: var(--mantine-color-gray-2);
+    flex: 1;
+    border-radius: 99px;
+    height: 12px;
+    position: relative;
+    overflow: hidden;
+
+
+    --line-width: calc(var(--line-end) - var(--line-start));
+
+}
+
+.item {
+    border-radius: 3px;
+    overflow: hidden;
+    position: absolute;
+    gap: 0;
+    height: 100%;
+
+    --task-width: calc(var(--task-end) - var(--task-start));
+
+    left: calc((var(--task-start) - var(--line-start)) / var(--line-width) * 100%);
+    width: calc((var(--task-width) / var(--line-width)) * 100%);
+
+}
+
+.itemFocus {
+    background-color: var(--mantine-color-blue-5);
+    height: 100%;
+    width: calc((var(--task-rest) - var(--task-start)) / var(--task-width) * 100%);
+}
+
+.itemRest {
+    background-color: var(--mantine-color-orange-5);
+    height: 100%;
+    flex: 1;
+}

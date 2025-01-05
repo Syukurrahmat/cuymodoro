@@ -43,6 +43,7 @@ export default function TaskList() {
 					<Button
 						leftSection={<IconPlayerPlay size="18" />}
 						children="Mulai Fokus"
+						variant='light'
 						onClick={() => navigate(`/prepare`)}
 					/>
 				)}
